@@ -4,6 +4,7 @@ use chifoumi::{play, Game};
 use greetings::greets; // import function
 
 use clap::{Parser, Subcommand};
+use rand::{seq::SliceRandom, thread_rng};
 
 #[derive(Parser)]
 #[clap(
@@ -24,7 +25,7 @@ enum Commands {
         #[clap(short, long, value_parser)]
         a: String,
         #[clap(short, long, value_parser)]
-        b: String,
+        b: Option<String>,
     },
     Greetings {
         #[clap(short, long, value_parser)]
@@ -37,9 +38,17 @@ fn main() {
 
     match &cli.command {
         Commands::Chifoumi { a, b } => {
-            let a = Game::try_from(a).expect("toto");
-            let b = Game::try_from(b).expect("toto");
-            println!("{:#?}", play(a, b));
+            let player_a = Game::try_from(a).expect("toto");
+            let player_b;
+            match b {
+                None => {
+                    player_b = *[Game::Paper, Game::Rock, Game::Scissor].choose(&mut thread_rng()).expect("toto");
+                },
+                Some(b_arg) => {
+                    player_b = Game::try_from(b_arg).expect("toto");
+                }
+            }
+            println!("{:#?}", play(player_a, player_b));
         }
         Commands::Greetings { name } => {
             greets(name);

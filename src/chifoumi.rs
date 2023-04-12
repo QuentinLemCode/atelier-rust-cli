@@ -15,7 +15,7 @@ impl TryFrom<&String> for Game {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Game {
     Rock,
     Paper,

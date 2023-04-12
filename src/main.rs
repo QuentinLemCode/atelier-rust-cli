@@ -1,19 +1,48 @@
-use std::env;
-
-mod greetings; //declare module
 mod chifoumi;
-use greetings::greets; // import function
+mod greetings; //declare module
 use chifoumi::{play, Game};
+use greetings::greets; // import function
+
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+#[clap(
+    author = "Quentin Lem Code",
+    version = "1.0.0",
+    about = "THE CLI",
+    long_about = None
+)]
+#[clap(propagate_version = true)]
+struct Cli {
+    #[clap(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    Chifoumi {
+        #[clap(short, long, value_parser)]
+        a: String,
+        #[clap(short, long, value_parser)]
+        b: String,
+    },
+    Greetings {
+        #[clap(short, long, value_parser)]
+        name: String,
+    },
+}
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let cmd = args.get(1).expect("no argument");
-    if cmd == "greets" {
-        greets(args.get(2).expect("bad args"));
-    }
-    if cmd == "chifoumi" {
-        let a = Game::try_from(args.get(2).expect("bad args")).expect("toto");
-        let b = Game::try_from(args.get(3).expect("bad args")).expect("toto");
-        println!("{:#?}", play(a, b));
+    let cli = Cli::parse();
+
+    match &cli.command {
+        Commands::Chifoumi { a, b } => {
+            let a = Game::try_from(a).expect("toto");
+            let b = Game::try_from(b).expect("toto");
+            println!("{:#?}", play(a, b));
+        }
+        Commands::Greetings { name } => {
+            greets(name);
+        }
     }
 }

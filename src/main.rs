@@ -42,9 +42,6 @@ enum Commands {
 }
 
 fn main() {
-    let result = search(&String::from("toto"));
-    let table = result.expect("toto").hits.table();
-    print_stdout(table).expect("toto");
     let cli = Cli::parse();
 
     match &cli.command {

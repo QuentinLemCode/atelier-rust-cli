@@ -1,7 +1,11 @@
 mod chifoumi;
-mod greetings; //declare module
+mod greetings;
+mod search;
 use chifoumi::{play, Game};
-use greetings::greets; // import function
+use greetings::greets;
+use search::search;
+use cli_table::{print_stdout, Table};
+
 
 use clap::{Parser, Subcommand};
 use rand::{seq::SliceRandom, thread_rng};
@@ -31,9 +35,16 @@ enum Commands {
         #[clap(short, long, value_parser)]
         name: String,
     },
+    Search {
+        #[clap(short, long, value_parser)]
+        query: String,
+    }
 }
 
 fn main() {
+    let result = search(&String::from("toto"));
+    let table = result.expect("toto").hits.table();
+    print_stdout(table).expect("toto");
     let cli = Cli::parse();
 
     match &cli.command {
@@ -49,9 +60,14 @@ fn main() {
                 }
             }
             println!("{:#?}", play(player_a, player_b));
-        }
+        },
         Commands::Greetings { name } => {
             greets(name);
+        },
+        Commands::Search { query } => {
+            let result = search(query);
+            let table = result.expect("toto").hits.table();
+            print_stdout(table).expect("toto");
         }
     }
 }
